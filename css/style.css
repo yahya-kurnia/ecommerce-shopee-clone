@@ -1,0 +1,72 @@
+CREATE DATABASE IF NOT EXISTS ecommerce_shopee;
+USE ecommerce_shopee;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) DEFAULT NULL,
+    address TEXT DEFAULT NULL,
+    role ENUM('user','admin') DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    original_price INT NOT NULL,
+    discount INT NOT NULL DEFAULT 0,
+    rating DECIMAL(3,1) DEFAULT 0,
+    reviews INT DEFAULT 0,
+    sold INT DEFAULT 0,
+    image TEXT DEFAULT NULL,
+    description TEXT,
+    stock INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    total INT NOT NULL,
+    shipping_fee INT NOT NULL DEFAULT 0,
+    payment_method VARCHAR(50) DEFAULT 'bank_transfer',
+    courier VARCHAR(50) DEFAULT 'jne',
+    address TEXT,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    amount INT NOT NULL,
+    method VARCHAR(50) DEFAULT 'bank_transfer',
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+
+INSERT INTO products (name, category, price, original_price, discount, rating, reviews, sold, image, description, stock) VALUES
+('Laptop ASUS VivoBook 14', 'Elektronik', 6200000, 7600000, 18, 4.8, 132, 520, 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80', 'Laptop ringan untuk kerja dan belajar dengan performa yang stabil.', 25),
+('Sepatu Sneaker Pria', 'Fashion', 380000, 520000, 27, 4.7, 91, 430, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80', 'Sneaker modern dengan bahan nyaman dan desain premium.', 40),
+('Setrika Listrik Philips', 'Rumah Tangga', 255000, 330000, 23, 4.6, 210, 890, 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80', 'Setrika cepat panas dan aman untuk kebutuhan rumah tangga.', 60),
+('Buku Pemrograman Web', 'Buku', 180000, 240000, 25, 4.9, 48, 230, 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80', 'Panduan lengkap untuk belajar pemrograman web modern.', 70),
+('Tas Wanita Minimalis', 'Fashion', 290000, 390000, 26, 4.5, 73, 310, 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=900&q=80', 'Tas sederhana dengan desain stylish dan kapasitas besar.', 38),
+('Smartwatch Garmin', 'Elektronik', 1450000, 1900000, 24, 4.8, 165, 540, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80', 'Smartwatch dengan fitur olahraga, notifikasi, dan monitor kesehatan.', 18),
+('Makanan Ringan Sambal', 'Makanan', 45000, 60000, 25, 4.7, 72, 420, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80', 'Camilan gurih dengan rasa sambal pedas yang nikmat.', 100),
+('Alat Fitness Dumbbell', 'Olahraga', 650000, 820000, 21, 4.8, 55, 260, 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80', 'Dumbbell ringan untuk latihan di rumah maupun gym.', 33);
